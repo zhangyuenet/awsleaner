@@ -53,6 +53,7 @@ class SimpleCrudAppStack(aws_cdk.Stack):
             runtime=runtime,
         )
 
+
         # API Gateway
         self._api = app_project_api.AppProjectApi(
             self,
@@ -60,22 +61,29 @@ class SimpleCrudAppStack(aws_cdk.Stack):
             self._app_project.app_entries[api_entrypoint_name],
         )
 
+        request_validator = self._api.request_validator
+
         products = self._api.api.root.add_resource("products")
         products.add_method(
             "GET", authorization_type=aws_apigateway.AuthorizationType.IAM
         )
         products.add_method(
-            "POST", authorization_type=aws_apigateway.AuthorizationType.IAM
+            "POST", 
+            request_validator=request_validator,
+            authorization_type=aws_apigateway.AuthorizationType.IAM
         )
         products_id = products.add_resource("{id}")
         products_id.add_method(
             "GET", authorization_type=aws_apigateway.AuthorizationType.IAM
         )
         products_id.add_method(
-            "PUT", authorization_type=aws_apigateway.AuthorizationType.IAM
+            "PUT", 
+            request_validator=request_validator,
+            authorization_type=aws_apigateway.AuthorizationType.IAM
         )
         products_id.add_method(
-            "DELETE", authorization_type=aws_apigateway.AuthorizationType.IAM
+            "DELETE", 
+            authorization_type=aws_apigateway.AuthorizationType.IAM
         )
 
         products.add_cors_preflight(allow_origins=["*"], allow_methods=["GET", "POST"])
@@ -113,4 +121,11 @@ class SimpleCrudAppStack(aws_cdk.Stack):
                     reason="API methods use IAM authorization instead of Cognito.",
                 ),
             ],
+        )
+
+        cdk_nag.NagSuppressions.add_stack_suppressions(self, [
+            {"id": "AwsSolutions-DDB3", "reason": "This is a test project."},
+            {"id": "AwsSolutions-L1", "reason": "This is a test project."},
+            # 添加更多的 suppression...
+            ]
         )

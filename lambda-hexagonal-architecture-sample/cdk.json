@@ -1,5 +1,5 @@
 {
-    "app": "python simple-crud-app.py",
+    "app": "python3 simple-crud-app.py",
     "watch": {
         "include": [
             "**"

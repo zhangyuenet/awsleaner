@@ -67,6 +67,8 @@ class AppProjectApi(constructs.Construct):
             ],
         )
 
+
+
         self._api.add_gateway_response(
             "client-error-response",
             type=aws_apigateway.ResponseType.DEFAULT_4_XX,
@@ -95,9 +97,20 @@ class AppProjectApi(constructs.Construct):
             },
         )
 
-        aws_apigateway.RequestValidator(self, "api-gw-request-validator",
+        #aws_apigateway.RequestValidator(self, "api-gw-request-validator",
+        #    rest_api=self._api,
+        #)
+
+        self._request_validator = aws_apigateway.RequestValidator(
+            self, 
+            "api-gw-request-validator",
             rest_api=self._api,
+            validate_request_body=True,
+            validate_request_parameters=True
         )
+    @property
+    def request_validator(self):
+        return self._request_validator
 
     @property
     def api(self) -> aws_apigateway.SpecRestApi:
